@@ -1,12 +1,31 @@
 package br.com.project.challenge.model;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+@Entity
 public class Consultorio {
+	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long codigo;
 	
 	private int numero;
 	
 	
 	//----------------------------------------GETTERSANDSETTERS---------------------------------------------------
 
+	
+	public Long getCodigo() {
+		return codigo;
+	}
+
+	public void setCodigo(Long codigo) {
+		this.codigo = codigo;
+	}
+	
 	public int getNumero() {
 		return numero;
 	}
@@ -19,6 +38,7 @@ public class Consultorio {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + ((codigo == null) ? 0 : codigo.hashCode());
 		result = prime * result + numero;
 		return result;
 	}
@@ -32,6 +52,11 @@ public class Consultorio {
 		if (getClass() != obj.getClass())
 			return false;
 		Consultorio other = (Consultorio) obj;
+		if (codigo == null) {
+			if (other.codigo != null)
+				return false;
+		} else if (!codigo.equals(other.codigo))
+			return false;
 		if (numero != other.numero)
 			return false;
 		return true;
