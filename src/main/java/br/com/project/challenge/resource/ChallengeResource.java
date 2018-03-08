@@ -1,11 +1,16 @@
 package br.com.project.challenge.resource;
 
 import java.net.URI;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -72,8 +77,20 @@ public class ChallengeResource {
 		return ResponseEntity.created(uri).body(consultorioSalva);
 	}
 	
+	@SuppressWarnings("deprecation")
 	@PostMapping("/salvarConsulta")
 	public ResponseEntity<Consulta> criar(@RequestBody Consulta consulta, HttpServletResponse response) {
+		List<Consulta> listarConsultas = consultaRepository.findAll();
+		Calendar calendar = Calendar.getInstance();
+		Date data = new Date();
+		for (Consulta con : listarConsultas) {
+			DateFormat dateFormat = new SimpleDateFormat("HH:mm");
+			data.setTime(con.getDataHora().getTime());
+			if(Integer.parseInt(dateFormat.format(data)) <= calendar.getTime().getMinutes() + 15) {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+			}			
+		}
+		
 		Consulta consultaSalva = consultaRepository.save(consulta);
 		
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{codigo}")
