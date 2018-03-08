@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import br.com.project.challenge.model.Consulta;
 import br.com.project.challenge.model.Consultorio;
 import br.com.project.challenge.model.Medico;
+import br.com.project.challenge.repository.ConsultaRepository;
 import br.com.project.challenge.repository.ConsultorioRepository;
 import br.com.project.challenge.repository.MedicoRepository;
 
@@ -29,6 +31,9 @@ public class ChallengeResource {
 	@Autowired
 	private ConsultorioRepository consultorioRepository;
 	
+	@Autowired
+	private ConsultaRepository consultaRepository;
+	
 	
 	@GetMapping("/medico")
 	public List<Medico> listarMedico(){
@@ -40,6 +45,11 @@ public class ChallengeResource {
 		return consultorioRepository.findAll();
 	}
 	
+	@GetMapping("/consulta")
+	public List<Consulta> listarConsulta(){
+		return consultaRepository.findAll();
+	}
+	
 	@PostMapping("/salvarMedico")
 	public ResponseEntity<Medico> criar(@RequestBody Medico medico, HttpServletResponse response) {
 		Medico medicoSalva = medicoRepository.save(medico);
@@ -49,5 +59,27 @@ public class ChallengeResource {
 		response.setHeader("Location", uri.toASCIIString());
 		
 		return ResponseEntity.created(uri).body(medicoSalva);
+	}
+	
+	@PostMapping("/salvarConsultorio")
+	public ResponseEntity<Consultorio> criar(@RequestBody Consultorio consultorio, HttpServletResponse response) {
+		Consultorio consultorioSalva = consultorioRepository.save(consultorio);
+		
+		URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{codigo}")
+			.buildAndExpand(consultorioSalva.getCodigo()).toUri();
+		response.setHeader("Location", uri.toASCIIString());
+		
+		return ResponseEntity.created(uri).body(consultorioSalva);
+	}
+	
+	@PostMapping("/salvarConsulta")
+	public ResponseEntity<Consulta> criar(@RequestBody Consulta consulta, HttpServletResponse response) {
+		Consulta consultaSalva = consultaRepository.save(consulta);
+		
+		URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{codigo}")
+			.buildAndExpand(consultaSalva.getCodigo()).toUri();
+		response.setHeader("Location", uri.toASCIIString());
+		
+		return ResponseEntity.created(uri).body(consultaSalva);
 	}
 }
