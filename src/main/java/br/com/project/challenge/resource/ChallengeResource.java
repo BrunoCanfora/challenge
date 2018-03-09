@@ -89,12 +89,14 @@ public class ChallengeResource {
 			DateTimeFormatter formatter = DateTimeFormat.forPattern("dd/MM/yyyy HH:mm");
 			dataNow.setTime(consulta.getDataHora().getTime());
 			DateTime time = formatter.parseDateTime(dateFormat.format(dataNow));
-			time = time.plusMinutes(15);
+			//time = time.plusMinutes(15);
 			dataListagem.setTime(con.getDataHora().getTime());
+			DateTime time2 = formatter.parseDateTime((dateFormat.format(dataListagem)));
+			time2 = time2.plusMinutes(15);
 			System.out.println("Data e Hora + 15m: "+time);
-			System.out.println("Data e Hora Banco: "+formatter.parseDateTime((dateFormat.format(dataListagem))));
-			if(time.isBefore((formatter.parseDateTime((dateFormat.format(dataListagem)))))
-					|| formatter.parseDateTime((dateFormat.format(dataListagem))).equals((time))) {
+			System.out.println("Data e Hora Banco: "+time2);
+			if(time.isAfter(time2)
+					|| time2.equals((time))) {
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 			}			
 		}
