@@ -3,12 +3,14 @@ package br.com.project.challenge.resource;
 import java.net.URI;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -77,16 +79,22 @@ public class ChallengeResource {
 		return ResponseEntity.created(uri).body(consultorioSalva);
 	}
 	
-	@SuppressWarnings("deprecation")
 	@PostMapping("/salvarConsulta")
 	public ResponseEntity<Consulta> criar(@RequestBody Consulta consulta, HttpServletResponse response) {
-		List<Consulta> listarConsultas = consultaRepository.findAll();
-		Calendar calendar = Calendar.getInstance();
-		Date data = new Date();
+		List<Consulta> listarConsultas = consultaRepository.findAll();		
+		Date dataListagem = new Date();
+		Date dataNow = new Date();		
 		for (Consulta con : listarConsultas) {
-			DateFormat dateFormat = new SimpleDateFormat("HH:mm");
-			data.setTime(con.getDataHora().getTime());
-			if(Integer.parseInt(dateFormat.format(data)) <= calendar.getTime().getMinutes() + 15) {
+			DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+			DateTimeFormatter formatter = DateTimeFormat.forPattern("dd/MM/yyyy HH:mm");
+			dataNow.setTime(consulta.getDataHora().getTime());
+			DateTime time = formatter.parseDateTime(dateFormat.format(dataNow));
+			time = time.plusMinutes(15);
+			dataListagem.setTime(con.getDataHora().getTime());
+			System.out.println("Data e Hora + 15m: "+time);
+			System.out.println("Data e Hora Banco: "+formatter.parseDateTime((dateFormat.format(dataListagem))));
+			if(time.isBefore((formatter.parseDateTime((dateFormat.format(dataListagem)))))
+					|| formatter.parseDateTime((dateFormat.format(dataListagem))).equals((time))) {
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 			}			
 		}
